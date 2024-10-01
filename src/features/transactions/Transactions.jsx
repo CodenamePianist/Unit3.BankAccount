@@ -12,30 +12,29 @@ export default function Transactions() {
   const dispatch = useDispatch();
 
   const [amountStr, setAmountStr] = useState("0.00");
+  const [recipient, setRecipient] = useState("");
 
   /** Dispatches a transaction action based on the form submission. */
   const onTransaction = (event) => {
     event.preventDefault();
-    console.log("Button Pressed!");
 
     // This changes depending on which button the user clicked to submit the form.
     // It will be either "deposit", "withdraw", or "transfer".
     const action = event.nativeEvent.submitter.name;
-    const recipient = event.target.recipient.value;
 
     const amount = +amountStr;
-    console.log(amount, balance);
 
     // TODO: Dispatch the appropriate transaction action based on `action`
     if (action === "withdraw") {
       dispatch(withdrawal(amount));
     } else if (action === "deposit") {
       dispatch(deposit(amount));
-      console.log("Deposit pushed");
     } else if (action === "transfer") {
       dispatch(transfer({ amount: amount, recipient: recipient }));
-      console.log(recipient);
     }
+
+    setAmountStr("0.00");
+    setRecipient("");
   };
 
   return (
@@ -68,7 +67,13 @@ export default function Transactions() {
         <div className="form-row">
           <label>
             Transfer to
-            <input type="text" placeholder="Recipient Name" name="recipient" />
+            <input
+              type="text"
+              placeholder="Recipient Name"
+              name="recipient"
+              value={recipient}
+              onChange={(event) => setRecipient(event.target.value)}
+            />
           </label>
           <button name="transfer">Transfer</button>
         </div>

@@ -34,7 +34,6 @@ export default function TransactionHistory() {
         <tbody>
           {history &&
             history.map((transaction, index) => {
-              console.log(index);
               return <TransactionRow transaction={transaction} key={index} />;
             })}
         </tbody>
