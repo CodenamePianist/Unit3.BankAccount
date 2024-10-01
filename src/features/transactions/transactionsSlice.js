@@ -12,7 +12,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 /** @type {{balance: number, history: Transaction[]}} */
 const initialState = {
-  balance: 0,
+  balance: 100,
   history: [],
 };
 
@@ -31,28 +31,30 @@ const transactionsSlice = createSlice({
   initialState,
   reducers: {
     withdrawal: (state, { payload }) => {
-      state.balance -= payload.amount;
+      state.balance -= payload;
       state.history.push({
         type: "withdrawal",
-        amount: payload.amount,
+        amount: payload,
         balance: state.balance,
       });
     },
     deposit: (state, { payload }) => {
-      state.balance += payload.amount;
+      state.balance += payload;
       state.history.push({
         type: "deposit",
-        amount: payload.amount,
+        amount: payload,
         balance: state.balance,
       });
     },
     transfer: (state, { payload }) => {
-      state.balance -= payload.amount;
+      state.balance -= +payload.amount;
       state.history.push({
         type: "transfer",
-        amaount: payload.amount,
+        amount: payload.amount,
         balance: state.balance,
+        recipient: payload.recipient,
       });
+      console.log(payload);
     },
   },
 });

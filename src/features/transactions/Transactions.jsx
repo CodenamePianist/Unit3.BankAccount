@@ -1,5 +1,6 @@
 import { useState } from "react";
-
+import { useSelector, useDispatch } from "react-redux";
+import { deposit, withdrawal, transfer } from "./transactionsSlice";
 import "./transactions.scss";
 
 /**
@@ -7,21 +8,34 @@ import "./transactions.scss";
  */
 export default function Transactions() {
   // TODO: Get the balance from the Redux store using the useSelector hook
-  const balance = 0;
+  const balance = useSelector((state) => state.transactions.balance);
+  const dispatch = useDispatch();
 
   const [amountStr, setAmountStr] = useState("0.00");
 
   /** Dispatches a transaction action based on the form submission. */
-  const onTransaction = (e) => {
-    e.preventDefault();
+  const onTransaction = (event) => {
+    event.preventDefault();
+    console.log("Button Pressed!");
 
     // This changes depending on which button the user clicked to submit the form.
     // It will be either "deposit", "withdraw", or "transfer".
-    const action = e.nativeEvent.submitter.name;
+    const action = event.nativeEvent.submitter.name;
+    const recipient = event.target.recipient.value;
 
     const amount = +amountStr;
+    console.log(amount, balance);
 
     // TODO: Dispatch the appropriate transaction action based on `action`
+    if (action === "withdraw") {
+      dispatch(withdrawal(amount));
+    } else if (action === "deposit") {
+      dispatch(deposit(amount));
+      console.log("Deposit pushed");
+    } else if (action === "transfer") {
+      dispatch(transfer({ amount: amount, recipient: recipient }));
+      console.log(recipient);
+    }
   };
 
   return (
@@ -29,7 +43,7 @@ export default function Transactions() {
       <h2>Transactions</h2>
       <figure>
         <figcaption>Current Balance &nbsp;</figcaption>
-        <strong>${balance.toFixed(2)}</strong>
+        <strong>${balance}</strong>
       </figure>
       <form onSubmit={onTransaction}>
         <div className="form-row">
@@ -41,7 +55,7 @@ export default function Transactions() {
               min={0}
               step="0.01"
               value={amountStr}
-              onChange={(e) => setAmountStr(e.target.value)}
+              onChange={(event) => setAmountStr(event.target.value)}
             />
           </label>
           <div>
