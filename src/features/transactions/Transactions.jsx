@@ -1,5 +1,6 @@
 import { useState } from "react";
-
+import { useSelector, useDispatch } from "react-redux";
+import { deposit, withdrawal, transfer } from "./transactionsSlice";
 import "./transactions.scss";
 
 /**
@@ -7,21 +8,33 @@ import "./transactions.scss";
  */
 export default function Transactions() {
   // TODO: Get the balance from the Redux store using the useSelector hook
-  const balance = 0;
+  const balance = useSelector((state) => state.transactions.balance);
+  const dispatch = useDispatch();
 
   const [amountStr, setAmountStr] = useState("0.00");
+  const [recipient, setRecipient] = useState("");
 
   /** Dispatches a transaction action based on the form submission. */
-  const onTransaction = (e) => {
-    e.preventDefault();
+  const onTransaction = (event) => {
+    event.preventDefault();
 
     // This changes depending on which button the user clicked to submit the form.
     // It will be either "deposit", "withdraw", or "transfer".
-    const action = e.nativeEvent.submitter.name;
+    const action = event.nativeEvent.submitter.name;
 
     const amount = +amountStr;
 
     // TODO: Dispatch the appropriate transaction action based on `action`
+    if (action === "withdraw") {
+      dispatch(withdrawal(amount));
+    } else if (action === "deposit") {
+      dispatch(deposit(amount));
+    } else if (action === "transfer") {
+      dispatch(transfer({ amount: amount, recipient: recipient }));
+    }
+
+    setAmountStr("0.00");
+    setRecipient("");
   };
 
   return (
@@ -29,7 +42,7 @@ export default function Transactions() {
       <h2>Transactions</h2>
       <figure>
         <figcaption>Current Balance &nbsp;</figcaption>
-        <strong>${balance.toFixed(2)}</strong>
+        <strong>${balance}</strong>
       </figure>
       <form onSubmit={onTransaction}>
         <div className="form-row">
@@ -41,7 +54,7 @@ export default function Transactions() {
               min={0}
               step="0.01"
               value={amountStr}
-              onChange={(e) => setAmountStr(e.target.value)}
+              onChange={(event) => setAmountStr(event.target.value)}
             />
           </label>
           <div>
@@ -54,7 +67,13 @@ export default function Transactions() {
         <div className="form-row">
           <label>
             Transfer to
-            <input type="text" placeholder="Recipient Name" name="recipient" />
+            <input
+              type="text"
+              placeholder="Recipient Name"
+              name="recipient"
+              value={recipient}
+              onChange={(event) => setRecipient(event.target.value)}
+            />
           </label>
           <button name="transfer">Transfer</button>
         </div>
